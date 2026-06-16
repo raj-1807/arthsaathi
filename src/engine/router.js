@@ -52,3 +52,36 @@ export function getAgentResponse(message, user) {
   }
   return { text: FALLBACK_RESPONSE, agent: "fallback" };
 }
+// ScamAlert — pattern-based fraud risk scoring, fully offline.
+
+const SCAM_PATTERNS = [
+  { pattern: /otp/i, weight: 30, reason: 'Asks for OTP — banks never ask this' },
+  { pattern: /pin|password/i, weight: 30, reason: 'Asks for PIN/password — never share this' },
+  { pattern: /lottery|lucky winner|won.*prize/i, weight: 25, reason: 'Unsolicited prize/lottery claim' },
+  { pattern: /urgent|immediately|act now|expire/i, weight: 15, reason: 'Creates false urgency' },
+  { pattern: /click.*link|click here/i, weight: 20, reason: 'Suspicious link request' },
+  { pattern: /guaranteed.*return|double.*money|100%.*profit/i, weight: 25, reason: 'Unrealistic guaranteed returns' },
+  { pattern: /kyc.*update|account.*block|verify.*account/i, weight: 25, reason: 'Fake KYC/account verification pressure' },
+  { pattern: /pay.*fee|advance.*payment|processing.*charge/i, weight: 20, reason: 'Upfront fee request — common scam tactic' },
+  { pattern: /whatsapp.*job|work from home.*earn/i, weight: 20, reason: 'Suspicious WhatsApp job offer pattern' },
+]
+
+export function analyzeScamRisk(message) {
+  let score = 0
+  const reasons = []
+
+  for (const { pattern, weight, reason } of SCAM_PATTERNS) {
+    if (pattern.test(message)) {
+      score += weight
+      reasons.push(reason)
+    }
+  }
+
+  score = Math.min(100, score)
+
+  let level = 'low'
+  if (score >= 60) level = 'high'
+  else if (score >= 30) level = 'medium'
+
+  return { score, level, reasons }
+}
