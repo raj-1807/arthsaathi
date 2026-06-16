@@ -48,3 +48,15 @@ export function healthScoreFromBudget(budgetResult) {
   if (surplus >= recommendedSavings) score += 10;
   return Math.max(0, Math.min(100, score));
 }
+
+import { INTENTS, FALLBACK_RESPONSE } from "../data/responses";
+
+export function getAgentResponse(message, user) {
+  const lower = message.toLowerCase();
+  for (const intent of INTENTS) {
+    if (intent.keywords.some((kw) => lower.includes(kw))) {
+      return { text: intent.response(user), agent: intent.id };
+    }
+  }
+  return { text: FALLBACK_RESPONSE, agent: "fallback" };
+}
