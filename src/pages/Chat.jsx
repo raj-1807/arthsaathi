@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect } from "react";
-import { useUser } from "../context/UserContext";
-import { getAgentResponse, analyzeScamRisk } from "../engine/router";
-import { Send, Bot, User, ShieldAlert, MessageSquare } from "lucide-react";
-import AgentBadge from "../components/AgentBadge";
-
+import { useState, useRef, useEffect } from 'react'
+import { useUser } from '../context/UserContext'
+import { getAgentResponse, analyzeScamRisk } from '../engine/router'
+import AgentBadge from '../components/AgentBadge'
+import { Send, Bot, User, ShieldAlert, MessageSquare, Mic, Volume2 } from 'lucide-react'
+import { speak, startListening, LANGUAGE_CODES } from '../engine/voice'
 const LEVEL_STYLES = {
   low: {
     color: "text-emerald-700",
@@ -32,6 +32,22 @@ export default function Chat() {
   const [scamText, setScamText] = useState("");
   const [scamResult, setScamResult] = useState(null);
   const bottomRef = useRef(null);
+  const [listening, setListening] = useState(false);
+  const langCode = LANGUAGE_CODES[user?.language] || "en-IN";
+
+  const handleMic = () => {
+    setListening(true);
+    startListening({
+      lang: langCode,
+      onResult: (transcript) => {
+        setInput(transcript);
+        setListening(false);
+      },
+      onError: () => setListening(false),
+    });
+  };
+
+  const handleSpeak = (text) => speak(text, langCode);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -79,6 +95,7 @@ export default function Chat() {
           <ShieldAlert size={15} /> ScamAlert Checker
         </button>
       </div>
+      
 
       {mode === "chat" && (
         <>
@@ -96,21 +113,18 @@ export default function Chat() {
                     <Bot size={15} className="text-emerald-600" />
                   </span>
                 )}
-                <div
-                  className={`max-w-[75%] rounded-2xl px-3.5 py-2 text-sm ${
-                    msg.sender === "user"
-                      ? "bg-emerald-600 text-white"
-                      : "bg-white border border-gray-200 text-gray-700"
-                  }`}
-                >
-                  {msg.sender === "bot" &&
-                    msg.agent &&
-                    msg.agent !== "fallback" && (
-                      <div className="mb-1">
-                        <AgentBadge name={msg.agent} />
-                      </div>
-                    )}
+                <div className={`max-w-[75%] rounded-2xl px-3.5 py-2 text-sm ${
+                  msg.sender === 'user' ? 'bg-emerald-600 text-white' : 'bg-white border border-gray-200 text-gray-700'
+                }`}>
+                  {msg.sender === 'bot' && msg.agent && msg.agent !== 'fallback' && (
+                    <div className="mb-1"><AgentBadge name={msg.agent} /></div>
+                  )}
                   {msg.text}
+                  {msg.sender === 'bot' && (
+                    <button onClick={() => handleSpeak(msg.text)} className="ml-2 text-gray-400 hover:text-emerald-600 inline-flex align-middle">
+                      <Volume2 size={14} />
+                    </button>
+                  )}
                 </div>
                 {msg.sender === "user" && (
                   <span className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
@@ -122,7 +136,7 @@ export default function Chat() {
             <div ref={bottomRef} />
           </div>
 
-          <div className="p-3 border-t border-gray-200 bg-white flex gap-2">
+        <div className="p-3 border-t border-gray-200 bg-white flex gap-2">
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -131,13 +145,21 @@ export default function Chat() {
               className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
             <button
+              onClick={handleMic}
+              className={`rounded-full w-10 h-10 flex items-center justify-center shrink-0 ${
+                listening ? 'bg-red-500 text-white animate-pulse' : 'bg-gray-100 text-gray-600'
+              }`}
+            >
+              <Mic size={16} />
+            </button>
+            <button
               onClick={handleSend}
               className="bg-emerald-600 text-white rounded-full w-10 h-10 flex items-center justify-center shrink-0"
             >
               <Send size={16} />
             </button>
           </div>
-        </>
+    
       )}
 
       {mode === "scam" && (
