@@ -4,6 +4,7 @@ import {
   MessageCircle,
   Wallet,
   GraduationCap,
+  WifiOff,
 } from "lucide-react";
 
 const LINKS = [
@@ -18,7 +19,12 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-10">
-      <span className="font-bold text-emerald-700 text-lg">ArthSaathi</span>
+      <div className="flex items-center gap-2">
+        <span className="font-bold text-emerald-700 text-lg">ArthSaathi</span>
+        <span className="hidden sm:flex items-center gap-1 text-[11px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+          <WifiOff size={11} /> Works offline
+        </span>
+      </div>
       <div className="flex gap-1">
         {LINKS.map(({ to, label, icon: Icon }) => {
           const active = location.pathname === to;

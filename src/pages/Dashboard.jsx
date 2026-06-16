@@ -6,6 +6,7 @@ import {
   ShieldAlert,
   GraduationCap,
   Landmark,
+  RotateCcw,
 } from "lucide-react";
 
 const QUICK_ACTIONS = [
@@ -104,6 +105,15 @@ export default function Dashboard() {
           </p>
         </div>
       </div>
+      <button
+        onClick={() => {
+          localStorage.removeItem("arthsaathi_user");
+          window.location.href = "/";
+        }}
+        className="mt-6 flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600"
+      >
+        <RotateCcw size={12} /> Reset profile (for demo/testing)
+      </button>
     </div>
   );
 }
