@@ -52,7 +52,7 @@ src/
 └── pages/        # Onboarding, Dashboard, Chat, Budget, Learn
 ```
 
-## 👥 Team ArthMinds
+## 👥 Team ArthDrishti
 
 - **Raj Barsaiya** — UG III Year, B.Tech IT, SGSITS Indore — [GitHub](https://github.com/raj-1807)
 - **Satakshi Rathod** — UG III Year, B.Tech IT, SGSITS Indore — [GitHub](https://github.com/satakshirathod)
